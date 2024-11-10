@@ -1,0 +1,14 @@
+/* Placeholder for AuthForm.css */
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.auth-form input {
+    margin: 10px 0;
+}
+
+.auth-form button {
+    margin-top: 20px;
+}
