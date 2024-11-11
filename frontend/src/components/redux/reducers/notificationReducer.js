@@ -1,10 +1,11 @@
+// notificationReducer.js
 import { FETCH_NOTIFICATIONS } from '../actions/types';
 
 const initialState = {
   notifications: [],
 };
 
-const notificationReducer = (state = initialState, action) => {
+export default function notificationReducer(state = initialState, action) {
   switch (action.type) {
     case FETCH_NOTIFICATIONS:
       return {
@@ -14,6 +15,4 @@ const notificationReducer = (state = initialState, action) => {
     default:
       return state;
   }
-};
-
-export default notificationReducer;
+}

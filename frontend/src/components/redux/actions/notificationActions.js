@@ -1,11 +1,15 @@
-// Placeholder code for notification actions
-import axios from "axios";
-
-export const FETCH_NOTIFICATIONS = "FETCH_NOTIFICATIONS";
+// actions/notificationActions.js
+import axios from 'axios';
+import { FETCH_NOTIFICATIONS } from './types';
 
 export const fetchNotifications = () => async (dispatch) => {
   try {
-    const response = await axios.get("/api/notifications");
+    const token = localStorage.getItem('token');
+    const response = await axios.get('http://localhost:5000/api/notifications', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     dispatch({ type: FETCH_NOTIFICATIONS, payload: response.data });
   } catch (error) {
     console.error("Error fetching notifications:", error);
