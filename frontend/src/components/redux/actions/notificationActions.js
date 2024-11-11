@@ -1,4 +1,3 @@
-// actions/notificationActions.js
 import axios from 'axios';
 import { FETCH_NOTIFICATIONS } from './types';
 

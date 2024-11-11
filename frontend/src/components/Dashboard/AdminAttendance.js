@@ -6,7 +6,6 @@ const AdminAttendance = () => {
   const [editingRecord, setEditingRecord] = useState(null);
   const [formData, setFormData] = useState({ check_in: "", check_out: "" });
 
-  // Fetch attendance records when the component mounts
   useEffect(() => {
     const fetchData = async () => {
       try {

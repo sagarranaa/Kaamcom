@@ -16,7 +16,6 @@ import HomePage from "./pages/HomePage";
 import AdminAttendance from "./components/Dashboard/AdminAttendance";
 
 function App() {
-  // Retrieve user and role from Redux or LocalStorage
   const { user } = useSelector((state) => state.auth);
   const role = user?.role || localStorage.getItem("role");
 
@@ -27,10 +26,9 @@ function App() {
     <Router>
       <Routes>
         <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} /> {/* Register route */}
+        <Route path="/register" element={<Register />} />
         <Route path="/" element={<HomePage />} />
 
-        {/* Admin Routes */}
         {isAdmin ? (
           <>
             <Route path="/admin/dashboard" element={<AdminDashboard />} />

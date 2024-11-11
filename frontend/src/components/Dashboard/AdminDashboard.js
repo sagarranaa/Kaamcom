@@ -3,6 +3,7 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { fetchAllAttendance, updateAttendance, deleteAttendance } from "../redux/actions/attendanceActions";
 import moment from "moment-timezone";
+import axios from "axios";
 import {
   Button,
   Table,
@@ -22,7 +23,7 @@ import {
   IconButton,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete"; // Import Delete Icon
+import DeleteIcon from "@mui/icons-material/Delete";
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -111,6 +112,31 @@ const AdminDashboard = () => {
     return 0; // Return 0 if work_hours cannot be calculated
   };
 
+  const downloadEmployeePDF = async (employeeId) => {
+    try {
+      const token = localStorage.getItem("token"); // Assuming token is stored in localStorage
+
+      const response = await axios.get(`/api/attendance/export/pdf/${employeeId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        responseType: 'blob', // Important for handling binary data
+      });
+
+      // Create a link to download the PDF
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `attendance_report_${employeeId}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error("Error downloading PDF:", error);
+      toast.error("Failed to download PDF.");
+    }
+  };
+
   const filteredRecords = attendanceRecords.filter((record) =>
     record.user_id.email.toLowerCase().includes(searchTerm)
   );
@@ -154,7 +180,8 @@ const AdminDashboard = () => {
                 <TableCell>{typeof record.work_hours === "number" ? `${record.work_hours.toFixed(2)} hrs` : "N/A"}</TableCell>
                 <TableCell>
                   <IconButton onClick={() => openEditModal(record)}><EditIcon /></IconButton>
-                  <IconButton onClick={() => handleDelete(record)}><DeleteIcon /></IconButton> {/* Delete Button */}
+                  <IconButton onClick={() => handleDelete(record)}><DeleteIcon /></IconButton>
+                  <Button onClick={() => downloadEmployeePDF(record.user_id._id)} color="secondary">Download PDF</Button>
                 </TableCell>
               </TableRow>
             ))}

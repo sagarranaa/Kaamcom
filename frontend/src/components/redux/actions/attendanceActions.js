@@ -33,7 +33,7 @@ export const fetchAllAttendance = () => async (dispatch) => {
 // Update attendance record
 export const updateAttendance = (id, updatedData) => async (dispatch) => {
   try {
-    const response = await API.put(`/attendance/${id}`, updatedData); // Use API instance
+    const response = await API.put(`/attendance/${id}`, updatedData); 
     dispatch({ type: UPDATE_ATTENDANCE, payload: response.data });
   } catch (error) {
     console.error("Error updating attendance:", error);
