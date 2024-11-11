@@ -124,33 +124,33 @@ exports.deleteAttendance = async (req, res) => {
 };
 
 exports.exportPDF = async (req, res) => {
-    const { employeeId } = req.params; // Optional employeeId for admin
+    const { employeeId } = req.params;
     const userId = req.user.id;
     const isAdmin = req.user.role === "Admin";
 
-    // Check if the user is an admin
     if (!isAdmin) {
         return res.status(403).json({ message: "Access denied. Only admins can download attendance PDFs." });
     }
 
     try {
-        // Determine the user for whom to generate the PDF
-        const queryUserId = employeeId ? employeeId : userId;
-
-        // Fetch attendance records
+        const queryUserId = employeeId || userId;
         const attendanceData = await Attendance.find({ user_id: queryUserId }).populate('user_id', 'email role');
 
         if (!attendanceData.length) {
             return res.status(404).json({ message: "No attendance records found." });
         }
 
-        // Generate the PDF
         const doc = new PDFDocument({ margin: 30 });
-        res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', `attachment; filename=attendance_report_${queryUserId}.pdf`);
-        doc.pipe(res);
+        let buffers = [];
+        
+        doc.on('data', data => buffers.push(data));
+        doc.on('end', async () => {
+            const pdfData = Buffer.concat(buffers);
+            res.setHeader('Content-Type', 'application/pdf');
+            res.setHeader('Content-Disposition', `attachment; filename=attendance_report_${queryUserId}.pdf`);
+            res.send(pdfData);
+        });
 
-        // Title and employee information
         doc.fontSize(18).text("Attendance Report", { align: 'center' });
         doc.moveDown();
         doc.fontSize(14).text(`Employee: ${attendanceData[0].user_id.email}`);
@@ -163,8 +163,6 @@ exports.exportPDF = async (req, res) => {
         doc.text("Check-in", 250, doc.y, { continued: true });
         doc.text("Check-out", 350, doc.y, { continued: true });
         doc.text("Work Hours", 450, doc.y);
-        
-        // Draw a line under the headers
         doc.moveTo(50, doc.y).lineTo(550, doc.y).stroke();
         doc.moveDown(0.5);
 
@@ -175,14 +173,13 @@ exports.exportPDF = async (req, res) => {
             const workHours = record.work_hours ? `${record.work_hours.toFixed(2)} hrs` : "N/A";
             const status = record.check_in && record.check_out ? "Present" : "N/A";
 
-            // Add data to each column
             doc.text(moment(record.check_in).format("YYYY-MM-DD"), 50, doc.y, { continued: true });
             doc.text(status, 150, doc.y, { continued: true });
             doc.text(checkInTime, 250, doc.y, { continued: true });
             doc.text(checkOutTime, 350, doc.y, { continued: true });
             doc.text(workHours, 450, doc.y);
 
-            doc.moveDown(0.5); // Space between rows
+            doc.moveDown(0.5);
         });
 
         doc.end();
