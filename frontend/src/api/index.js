@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://localhost:5000/api", // Use the full backend URL or configure a proxy
+  baseURL: "https://kaamcom.onrender.com/api", // Use the full backend URL or configure a proxy
 });
 
 // Add a request interceptor to attach the token to every request

@@ -4,7 +4,7 @@ import { FETCH_NOTIFICATIONS } from './types';
 export const fetchNotifications = () => async (dispatch) => {
   try {
     const token = localStorage.getItem('token');
-    const response = await axios.get('http://localhost:5000/api/notifications', {
+    const response = await axios.get('https://kaamcom.onrender.com/api/notifications', {
       headers: {
         Authorization: `Bearer ${token}`,
       },
